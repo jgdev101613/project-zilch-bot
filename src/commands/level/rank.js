@@ -19,6 +19,7 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
+    await interaction.deferReply();
     const target = interaction.options.getUser("user") ?? interaction.user;
     const settings = await getGuildSettings(interaction.guild.id);
     const member = await interaction.guild.members.fetch(target.id);
@@ -67,7 +68,7 @@ module.exports = {
       theme: settings.settings.theme,
     });
 
-    await interaction.reply({
+    await interaction.editReply({
       files: [
         {
           attachment: image,
