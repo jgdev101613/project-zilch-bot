@@ -1,4 +1,4 @@
-FROM node:18-slim
+FROM node:22-bookworm-slim
 
 # Install system-level FFmpeg and necessary audio codecs
 RUN apt-get update && apt-get install -y ffmpeg libopus-dev build-essential && rm -rf /var/lib/apt/lists/*
