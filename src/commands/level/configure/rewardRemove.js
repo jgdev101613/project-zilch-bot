@@ -1,7 +1,8 @@
-const GuildSettings = require("../../models/guildSettingsSchema");
+const GuildSettings = require("../../../models/guildSettingsSchema");
 const {
   ApplicationCommandOptionType,
   PermissionFlagsBits,
+  MessageFlags,
 } = require("discord.js");
 
 module.exports = {
@@ -57,7 +58,7 @@ module.exports = {
 
     await interaction.reply({
       content: `✅ Level **${level}** now rewards ${role}.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

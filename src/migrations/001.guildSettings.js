@@ -5,11 +5,7 @@ module.exports = async () => {
     {},
     {
       $set: {
-        "leveling.voice.allowSelfMute": true,
-        "leveling.voice.allowSelfDeaf": true,
-        "leveling.voice.allowServerMute": true,
-        "leveling.voice.allowServerDeaf": true,
-        "leveling.voice.allowAfkChannel": true,
+        guildName: "",
       },
     },
   );

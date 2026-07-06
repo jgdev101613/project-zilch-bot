@@ -1,3 +1,6 @@
+# Migration Template
+
+```js
 const Level = require("../models/levelSchema");
 
 module.exports = async () => {
@@ -13,3 +16,4 @@ module.exports = async () => {
 
   console.log(`[Migration] Updated ${result.modifiedCount} guild setting(s).`);
 };
+```

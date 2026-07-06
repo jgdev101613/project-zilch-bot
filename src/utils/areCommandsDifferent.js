@@ -1,7 +1,11 @@
 module.exports = (existingCommand, localCommand) => {
-  const areChoicesDifferent = (existingChoices, localChoices) => {
+  function areChoicesDifferent(existingChoices = [], localChoices = []) {
+    if (existingChoices.length !== localChoices.length) {
+      return true;
+    }
+
     for (const localChoice of localChoices) {
-      const existingChoice = existingChoices?.find(
+      const existingChoice = existingChoices.find(
         (choice) => choice.name === localChoice.name,
       );
 
@@ -9,16 +13,24 @@ module.exports = (existingCommand, localCommand) => {
         return true;
       }
 
-      if (localChoice.value !== existingChoice.value) {
+      if (
+        existingChoice.value !== localChoice.value ||
+        existingChoice.name !== localChoice.name
+      ) {
         return true;
       }
     }
-    return false;
-  };
 
-  const areOptionsDifferent = (existingOptions, localOptions) => {
+    return false;
+  }
+
+  function areOptionsDifferent(existingOptions = [], localOptions = []) {
+    if (existingOptions.length !== localOptions.length) {
+      return true;
+    }
+
     for (const localOption of localOptions) {
-      const existingOption = existingOptions?.find(
+      const existingOption = existingOptions.find(
         (option) => option.name === localOption.name,
       );
 
@@ -27,29 +39,43 @@ module.exports = (existingCommand, localCommand) => {
       }
 
       if (
-        localOption.description !== existingOption.description ||
-        localOption.type !== existingOption.type ||
-        (localOption.required || false) !== existingOption.required ||
-        (localOption.choices?.length || 0) !==
-          (existingOption.choices?.length || 0) ||
+        existingOption.name !== localOption.name ||
+        existingOption.description !== localOption.description ||
+        existingOption.type !== localOption.type ||
+        (existingOption.required ?? false) !== (localOption.required ?? false)
+      ) {
+        return true;
+      }
+
+      // Compare choices recursively
+      if (
         areChoicesDifferent(
-          localOption.choices || [],
           existingOption.choices || [],
+          localOption.choices || [],
+        )
+      ) {
+        return true;
+      }
+
+      // Compare nested options recursively
+      if (
+        areOptionsDifferent(
+          existingOption.options || [],
+          localOption.options || [],
         )
       ) {
         return true;
       }
     }
-    return false;
-  };
 
-  if (
-    existingCommand.description !== localCommand.description ||
-    existingCommand.options?.length !== (localCommand.options?.length || 0) ||
-    areOptionsDifferent(existingCommand.options, localCommand.options || [])
-  ) {
-    return true;
+    return false;
   }
 
-  return false;
+  return (
+    existingCommand.description !== localCommand.description ||
+    areOptionsDifferent(
+      existingCommand.options || [],
+      localCommand.options || [],
+    )
+  );
 };

@@ -6,11 +6,19 @@ const guildSettingsSchema = new Schema({
     required: true,
     unique: true,
   },
+  guildName: {
+    type: String,
+    required: false,
+    default: "",
+  },
 
+  // ==========================
+  // Leveling
+  // ==========================
   leveling: {
     enabled: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     // ==========================
@@ -18,6 +26,11 @@ const guildSettingsSchema = new Schema({
     // ==========================
 
     text: {
+      enabled: {
+        type: Boolean,
+        default: false,
+      },
+
       minXp: {
         type: Number,
         default: 5,
@@ -61,7 +74,7 @@ const guildSettingsSchema = new Schema({
     voice: {
       enabled: {
         type: Boolean,
-        default: true,
+        default: false,
       },
 
       minXp: {
@@ -154,6 +167,9 @@ const guildSettingsSchema = new Schema({
     ],
   },
 
+  // ==========================
+  // Settings
+  // ==========================
   settings: {
     theme: {
       font: {

@@ -1,11 +1,12 @@
 const GuildSettings = require("../models/guildSettingsSchema");
 
 module.exports = async () => {
-  const result = await GuildSettings.updateMany(
+  const result = await Level.GuildSettings(
     {},
     {
       $set: {
-        "leveling.levelUpMessage": "",
+        "levelling.text.enabled": false,
+        guildName: "",
       },
     },
   );

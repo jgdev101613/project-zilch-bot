@@ -1,5 +1,6 @@
 const { devs, testServer } = require("../../../config.json");
 const getLocalCommands = require("../../utils/getLocalCommands");
+const { MessageFlags } = require("discord.js");
 
 module.exports = async (client, interaction) => {
   if (!interaction.isChatInputCommand()) return;
@@ -17,7 +18,7 @@ module.exports = async (client, interaction) => {
       if (!devs.includes(interaction.member.id)) {
         interaction.reply({
           content: "Only developers are allowed to run this command.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -27,7 +28,7 @@ module.exports = async (client, interaction) => {
       if (!(interaction.guild.id === testServer)) {
         interaction.reply({
           content: "This command cannot be ran outside of the test server.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -38,7 +39,7 @@ module.exports = async (client, interaction) => {
         if (!interaction.member.permissions.has(permission)) {
           interaction.reply({
             content: "You do not have permission to run this command.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
           return;
         }
@@ -52,7 +53,7 @@ module.exports = async (client, interaction) => {
         if (!bot.permissions.has(permission)) {
           interaction.reply({
             content: "I do not have permission to run this command.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
           return;
         }

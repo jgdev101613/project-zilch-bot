@@ -57,7 +57,7 @@ module.exports = {
 
     await interaction.reply({
       content: `✅ Level **${level}** now rewards ${role}.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };
