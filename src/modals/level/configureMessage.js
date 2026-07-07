@@ -2,8 +2,7 @@ const getGuildSettings = require("../../services/guildSettings");
 const { MessageFlags } = require("discord.js");
 const createEmbed = require("../../utils/createEmbed");
 
-const EMBED_TYPES = require("../../constants/embedTypes");
-const UPDATE_TYPES = require("../../constants/updateTypes");
+const { EMBED_TYPES, UPDATE_TYPES } = require("../../constants");
 
 module.exports = {
   customId: "configure-level-message",

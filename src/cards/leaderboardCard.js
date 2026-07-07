@@ -2,6 +2,7 @@ const path = require("path");
 const { Canvas, loadImage } = require("@napi-rs/canvas");
 
 const leaderboardLayout = require("./layouts/leaderboardLayout");
+const drawLeaderboardFooter = require("./components/drawLeaderboardFooter");
 const drawLeaderboardHeader = require("./components/drawLeaderboardHeader");
 const drawLeaderboardEntries = require("./components/drawLeaderboardEntries");
 
@@ -31,6 +32,7 @@ module.exports = async function leaderboardCard(data) {
 
   await drawLeaderboardHeader(render);
   await drawLeaderboardEntries(render);
+  drawLeaderboardFooter(render);
 
   return canvas.encode("png");
 };

@@ -12,12 +12,10 @@ const leaderboardCard = require("../../../cards/leaderboardCard");
 
 // Utils
 const createEmbed = require("../../../utils/createEmbed");
-const EMBED_TYPES = require("../../../constants/embedTypes");
-const UPDATE_TYPES = require("../../../constants/updateTypes");
+const { EMBED_TYPES, UPDATE_TYPES } = require("../../../constants");
 
 // Services
 const syncMemberRewardRoles = require("../../../services/leveling/syncMemberRewardRoles");
-const embedTypes = require("../../../constants/embedTypes");
 
 /**
  * @param {import("discord.js").Client}  client

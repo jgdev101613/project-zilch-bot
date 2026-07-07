@@ -4,7 +4,7 @@ const canEarnVoiceXp = require("./canEarnVoiceXp");
 
 const { getAllSessions, updateLastAward } = require("./voiceLevelService");
 const getRandomXp = require("../utils/getRandomXp");
-const XP_SOURCES = require("../constants/xpSources");
+const { XP_SOURCES } = require("../constants");
 
 module.exports = (client) => {
   setInterval(async () => {

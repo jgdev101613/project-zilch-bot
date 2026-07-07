@@ -12,12 +12,9 @@ const {
 
 const getGuildSettings = require("../../../services/guildSettings");
 const createEmbed = require("../../../utils/createEmbed");
-const EMBED_TYPES = require("../../../constants/embedTypes");
-const UPDATE_TYPES = require("../../../constants/updateTypes");
+const { EMBED_TYPES, UPDATE_TYPES } = require("../../../constants");
 
-const {
-  DEFAULT_LEVEL_MESSAGE,
-} = require("../../../constants/defaultLevelMessage");
+const { DEFAULT_MESSAGES } = require("../../../constants");
 
 // ==========================
 // VOICE
@@ -963,7 +960,10 @@ async function configureSetLevelUpMessage(client, interaction, settings) {
       .setStyle(TextInputStyle.Paragraph)
       .setRequired(true)
       .setMaxLength(4000)
-      .setValue(settings.leveling.levelUpMessage ?? DEFAULT_LEVEL_MESSAGE);
+      .setValue(
+        settings.leveling.levelUpMessage ??
+          DEFAULT_MESSAGES.DEFAULT_LEVEL_MESSAGE,
+      );
 
     modal.addComponents(new ActionRowBuilder().addComponents(messageInput));
 

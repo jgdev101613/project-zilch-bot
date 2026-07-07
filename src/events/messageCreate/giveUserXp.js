@@ -6,7 +6,7 @@ const giveXp = require("../../services/giveXp");
 const cooldowns = new Map();
 const lastMessages = new Map();
 const getRandomXp = require("../../utils/getRandomXp");
-const XP_SOURCES = require("../../constants/xpSources");
+const { XP_SOURCES } = require("../../constants");
 /**
  * @param {Client} client
  * @param {Message} message

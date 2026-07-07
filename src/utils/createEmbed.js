@@ -1,12 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-
-const COLORS = {
-  SUCCESS: 0x57f287, // Discord Green
-  ERROR: 0xed4245, // Discord Red
-  INFO: 0x5865f2, // Discord Blurple
-  WARNING: 0xfee75c, // Discord Yellow
-  LEVELUPMESSAGE: 0x57f287,
-};
+const { COLORS } = require("../constants");
 
 module.exports = ({
   type = "INFO",

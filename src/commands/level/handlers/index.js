@@ -5,19 +5,16 @@ const calculateLevelXp = require("../../../utils/calculateLevelXp");
 const getGuildSettings = require("../../../services/guildSettings");
 
 // Leaderboard Imports
-const getLeaderboard = require("../../../services/leaderboard/getLeaderboard");
-const getUserRank = require("../../../services/leaderboard/getUserRank");
-const formatNumber = require("../../../cards/utils/formatNumber");
-const leaderboardCard = require("../../../cards/leaderboardCard");
+const {
+  createLeaderboardPayload,
+} = require("../../../services/leaderboard/createLeaderboardPayload");
 
 // Utils
 const createEmbed = require("../../../utils/createEmbed");
-const EMBED_TYPES = require("../../../constants/embedTypes");
-const UPDATE_TYPES = require("../../../constants/updateTypes");
+const { EMBED_TYPES, UPDATE_TYPES } = require("../../../constants");
 
 // Services
 const syncMemberRewardRoles = require("../../../services/leveling/syncMemberRewardRoles");
-const embedTypes = require("../../../constants/embedTypes");
 
 /**
  * @param {import("discord.js").Client}  client
@@ -95,41 +92,13 @@ async function leaderboard(client, interaction) {
   try {
     await interaction.deferReply();
 
-    const settings = await getGuildSettings(interaction.guild.id);
-
-    const leaderboard = await getLeaderboard(interaction.guild.id, 1, 10);
-
-    const yourRank = await getUserRank(
-      interaction.guild.id,
-      interaction.user.id,
-    );
-
-    const image = await leaderboardCard({
-      guildName: interaction.guild.name,
-
-      guildIcon: interaction.guild.iconURL({
-        extension: "png",
-        size: 256,
-      }),
-
-      currentPage: leaderboard.currentPage,
-      totalPages: leaderboard.totalPages,
-
-      users: leaderboard.users,
-
-      yourRank,
-
-      theme: settings.settings.theme,
+    const payload = await createLeaderboardPayload({
+      guild: interaction.guild,
+      ownerId: interaction.user.id,
+      page: 1,
     });
 
-    await interaction.editReply({
-      files: [
-        {
-          attachment: image,
-          name: "leaderboard.png",
-        },
-      ],
-    });
+    await interaction.editReply(payload);
   } catch (error) {
     console.error(`[Error] Error in rank function: ${error}`);
   }

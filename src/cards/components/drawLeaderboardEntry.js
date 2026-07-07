@@ -38,9 +38,9 @@ module.exports = async function drawLeaderboardEntry(render, entry) {
   // ==========================
 
   let rankText = `${rank}.`;
-  if (rank === 1) rankText = "🥇";
-  else if (rank === 2) rankText = "🥈";
-  else if (rank === 3) rankText = "🥉";
+  if (rank === 1) rankText = "1.";
+  else if (rank === 2) rankText = "2.";
+  else if (rank === 3) rankText = "3.";
 
   drawOutlinedText(render, {
     text: rankText,

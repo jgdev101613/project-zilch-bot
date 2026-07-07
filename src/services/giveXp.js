@@ -2,8 +2,8 @@ const Level = require("../models/levelSchema");
 const calculateLevelXp = require("../utils/calculateLevelXp");
 const levelRewardService = require("./levelRewardService");
 
-const XP_SOURCES = require("../constants/xpSources");
-const EMBED_TYPES = require("../constants/embedTypes");
+const { XP_SOURCES } = require("../constants");
+const { EMBED_TYPES } = require("../constants");
 const createEmbed = require("../utils/createEmbed");
 const { options } = require("../commands/level/level");
 const buildLevelUpMessage = require("./leveling/buildLevelUpMessage");
@@ -44,7 +44,18 @@ module.exports = async ({
     // 1. Atomically fetch or create the user's level document
     const level = await Level.findOneAndUpdate(
       { guildId: member.guild.id, userId: member.id },
-      { $setOnInsert: { xp: 0, totalXp: 0, level: 0 } },
+      {
+        $setOnInsert: {
+          xp: 0,
+          totalXp: 0,
+          level: 0,
+        },
+        $set: {
+          displayName: member.displayName,
+          username: member.user.username,
+          avatarURL: member.displayAvatarURL({ extension: "png", size: 256 }),
+        },
+      },
       { upsert: true, returnDocument: "after" },
     );
 
@@ -93,6 +104,7 @@ module.exports = async ({
           totalXp: newTotalXp,
           level: newLevel,
           displayName: member.displayName,
+          username: member.user.username,
           avatarURL: member.displayAvatarURL({ extension: "png", size: 256 }),
         },
       },
