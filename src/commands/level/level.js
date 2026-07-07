@@ -2,7 +2,7 @@ const { ApplicationCommandOptionType, ChannelType } = require("discord.js");
 const getGuildSettings = require("../../services/guildSettings");
 
 // Handlers Import
-const { leaderboard, rank } = require("./handlers");
+const { leaderboard, rank, rankSync } = require("./handlers");
 // Configure Imports
 const {
   handleVoiceEnable,
@@ -22,8 +22,18 @@ const {
   handleTextIgnoredChannel,
   handleTextIgnoredRole,
   handleTextSettings,
+
+  configureRewardAdd,
+  configureRewardRemove,
+  configureRewardList,
+  configureRewardStack,
+  configureSetLevelChannel,
+
+  configureSetLevelUpMessage,
+  configurePlaceholderView,
 } = require("./configure");
 // Admin Imports
+const { guildLevelSync } = require("./admin");
 
 module.exports = {
   name: "level",
@@ -44,7 +54,26 @@ module.exports = {
       description: "View the server leaderboard.",
       type: ApplicationCommandOptionType.Subcommand,
     },
+    {
+      name: "rank-sync",
+      description: "Synchronize your level based on accumulated XP",
+      type: ApplicationCommandOptionType.Subcommand,
+    },
 
+    {
+      name: "admin",
+      description: "Admin level commands",
+      type: ApplicationCommandOptionType.SubcommandGroup,
+
+      options: [
+        {
+          name: "guild-level-sync",
+          description:
+            "Synchronize guild members level based on accumulated XP",
+          type: ApplicationCommandOptionType.Subcommand,
+        },
+      ],
+    },
     // ==========================
     // Configuration
     // ==========================
@@ -267,10 +296,7 @@ module.exports = {
               description: "Voice channel.",
               type: ApplicationCommandOptionType.Channel,
               required: true,
-              channelTypes: [
-                ChannelType.GuildVoice,
-                ChannelType.GuildStageVoice,
-              ],
+              channelTypes: [ChannelType.GuildText],
             },
           ],
         },
@@ -293,6 +319,88 @@ module.exports = {
           name: "text-settings",
           description: "View current text leveling settings.",
           type: ApplicationCommandOptionType.Subcommand,
+        },
+
+        {
+          name: "reward-add",
+          description: "Add role reward to specific level.",
+          type: ApplicationCommandOptionType.Subcommand,
+          options: [
+            {
+              name: "level",
+              description: "Required level",
+              type: ApplicationCommandOptionType.Integer,
+              required: true,
+            },
+            {
+              name: "role",
+              description: "Reward role",
+              type: ApplicationCommandOptionType.Role,
+              required: true,
+            },
+          ],
+        },
+
+        {
+          name: "reward-remove",
+          description: "Remove role reward to specific level.",
+          type: ApplicationCommandOptionType.Subcommand,
+          options: [
+            {
+              name: "level",
+              description: "Level reward to remove.",
+              type: ApplicationCommandOptionType.Integer,
+              required: true,
+              minValue: 1,
+            },
+          ],
+        },
+
+        {
+          name: "reward-list",
+          description: "Displays all configured level rewards.",
+          type: ApplicationCommandOptionType.Subcommand,
+        },
+
+        {
+          name: "reward-stack",
+          description: "Configure how level reward roles are awarded.",
+          type: ApplicationCommandOptionType.Subcommand,
+          options: [
+            {
+              name: "enabled",
+              description: "Enable Stack Mode (true) or Replace Mode (false).",
+              type: ApplicationCommandOptionType.Boolean,
+              required: true,
+            },
+          ],
+        },
+
+        {
+          name: "announcement-channel",
+          description: "Sets the channel where level-up messages will be sent.",
+          type: ApplicationCommandOptionType.Subcommand,
+          options: [
+            {
+              name: "channel",
+              description: "The channel for level-up messages.",
+              type: ApplicationCommandOptionType.Channel,
+              channelTypes: [ChannelType.GuildText],
+              required: false,
+            },
+          ],
+        },
+
+        {
+          name: "level-up-message",
+          description: "Configure the level-up message.",
+          type: 1,
+        },
+
+        {
+          name: "placeholder-view",
+          description: "View all available level-up message placeholders.",
+          type: 1,
         },
       ],
     },
@@ -317,24 +425,23 @@ module.exports = {
         return leaderboard(client, interaction);
       }
 
+      if (subcommand === "rank-sync") {
+        return rankSync(client, interaction);
+      }
+
       return;
     }
 
-    // // ==========================
-    // // Admin
-    // // ==========================
+    // ==========================
+    // Admin
+    // ==========================
 
-    // if (group === "admin") {
-    //   if (subcommand === "addxp") {
-    //     return addXp(client, interaction);
-    //   }
-
-    //   if (subcommand === "removexp") {
-    //     return removeXp(client, interaction);
-    //   }
-
-    //   return;
-    // }
+    if (group === "admin") {
+      if (subcommand === "guild-level-sync") {
+        return guildLevelSync(client, interaction);
+      }
+      return;
+    }
 
     // ==========================
     // Configure
@@ -390,6 +497,27 @@ module.exports = {
       }
       if (subcommand === "text-settings") {
         return handleTextSettings(client, interaction, settings);
+      }
+      if (subcommand === "reward-add") {
+        return configureRewardAdd(client, interaction, settings);
+      }
+      if (subcommand === "reward-remove") {
+        return configureRewardRemove(client, interaction, settings);
+      }
+      if (subcommand === "reward-list") {
+        return configureRewardList(client, interaction, settings);
+      }
+      if (subcommand === "reward-stack") {
+        return configureRewardStack(client, interaction, settings);
+      }
+      if (subcommand === "announcement-channel") {
+        return configureSetLevelChannel(client, interaction, settings);
+      }
+      if (subcommand === "level-up-message") {
+        return configureSetLevelUpMessage(client, interaction, settings);
+      }
+      if (subcommand === "placeholder-view") {
+        return configurePlaceholderView(client, interaction, settings);
       }
       return;
     }

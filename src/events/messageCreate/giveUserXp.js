@@ -32,11 +32,15 @@ module.exports = async (client, message) => {
       return;
     }
 
-    // ==========================
-    // Ignored Channels
-    // ==========================
+    if (!settings.leveling.text.enabled) {
+      return;
+    }
 
     if (settings.leveling.text.ignoredChannels.includes(message.channel.id)) {
+      // ==========================
+      // Ignored Channels
+      // ==========================
+
       return;
     }
 
@@ -56,7 +60,8 @@ module.exports = async (client, message) => {
     // Cooldown
     // ==========================
 
-    const cooldownExpiration = cooldowns.get(message.author.id);
+    const userGuildKey = `${message.guild.id}:${message.author.id}`;
+    const cooldownExpiration = cooldowns.get(userGuildKey);
 
     if (cooldownExpiration && cooldownExpiration > Date.now()) {
       return;
@@ -69,7 +74,7 @@ module.exports = async (client, message) => {
     const content = message.content.trim();
 
     if (
-      content.length < settings.leveling.minimumMessageLength &&
+      content.length < settings.leveling.text.minimumMessageLength &&
       message.attachments.size === 0
     ) {
       return;
@@ -77,20 +82,17 @@ module.exports = async (client, message) => {
 
     const normalized = content.toLowerCase();
 
-    if (lastMessages.get(message.author.id) === normalized) {
+    if (lastMessages.get(userGuildKey) === normalized) {
       return;
     }
 
-    lastMessages.set(message.author.id, normalized);
+    lastMessages.set(userGuildKey, normalized);
 
     // ==========================
     // Start Cooldown
     // ==========================
 
-    cooldowns.set(
-      message.author.id,
-      Date.now() + settings.leveling.text.cooldown,
-    );
+    cooldowns.set(userGuildKey, Date.now() + settings.leveling.text.cooldown);
 
     // ==========================
     // Give XP

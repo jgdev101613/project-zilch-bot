@@ -2,18 +2,27 @@ const { devs, testServer } = require("../../../config.json");
 const getLocalCommands = require("../../utils/getLocalCommands");
 const { MessageFlags } = require("discord.js");
 
+// ==========================
+// Command Cache
+// ==========================
+// By declaring this outside the export, Node.js executes it once
+// upon startup and caches the result in memory.
+const localCommands = getLocalCommands();
+
 module.exports = async (client, interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  const localCommands = getLocalCommands();
-
   try {
+    // Look up the command from the in-memory cache
     const commandObject = localCommands.find(
       (cmd) => cmd.name === interaction.commandName,
     );
 
     if (!commandObject) return;
 
+    // ==========================
+    // Permission Checks
+    // ==========================
     if (commandObject.devOnly) {
       if (!devs.includes(interaction.member.id)) {
         interaction.reply({
@@ -60,6 +69,9 @@ module.exports = async (client, interaction) => {
       }
     }
 
+    // ==========================
+    // Execute Command
+    // ==========================
     await commandObject.callback(client, interaction);
   } catch (error) {
     console.error(`There was an error executing the command: ${error}`);

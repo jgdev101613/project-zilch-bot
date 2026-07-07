@@ -37,11 +37,8 @@ const levelSchema = new Schema(
   },
 );
 
-// Used for leaderboard queries
-levelSchema.index({
-  guildId: 1,
-  level: -1,
-  xp: -1,
-});
+levelSchema.index({ guildId: 1, userId: 1 }, { unique: true });
+
+levelSchema.index({ guildId: 1, level: -1, xp: -1 });
 
 module.exports = model("Level", levelSchema);

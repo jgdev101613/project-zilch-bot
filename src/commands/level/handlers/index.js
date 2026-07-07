@@ -10,6 +10,15 @@ const getUserRank = require("../../../services/leaderboard/getUserRank");
 const formatNumber = require("../../../cards/utils/formatNumber");
 const leaderboardCard = require("../../../cards/leaderboardCard");
 
+// Utils
+const createEmbed = require("../../../utils/createEmbed");
+const EMBED_TYPES = require("../../../constants/embedTypes");
+const UPDATE_TYPES = require("../../../constants/updateTypes");
+
+// Services
+const syncMemberRewardRoles = require("../../../services/leveling/syncMemberRewardRoles");
+const embedTypes = require("../../../constants/embedTypes");
+
 /**
  * @param {import("discord.js").Client}  client
  * @param {import("discord.js").Interaction} interaction
@@ -126,7 +135,61 @@ async function leaderboard(client, interaction) {
   }
 }
 
+/**
+ * @param {import("discord.js").Client}  client
+ * @param {import("discord.js").Interaction} interaction
+ */
+async function rankSync(client, interaction) {
+  try {
+    await interaction.deferReply();
+
+    const user = interaction.options.getUser("user") ?? interaction.user;
+
+    const member = await interaction.guild.members
+      .fetch(user.id)
+      .catch(() => null);
+
+    if (!member) {
+      return interaction.editReply("That member is not in this server.");
+    }
+
+    const settings = await getGuildSettings(interaction.guild.id);
+
+    const levelData = await Level.findOne({
+      guildId: interaction.guild.id,
+      userId: user.id,
+    });
+
+    if (!levelData) {
+      return interaction.editReply("This user has no level data.");
+    }
+
+    const result = await syncMemberRewardRoles(
+      member,
+      levelData.level,
+      settings.leveling.rewardRoles,
+      settings.leveling.rewardStacking,
+    );
+
+    const embed = createEmbed({
+      type: EMBED_TYPES.SUCCESS,
+      title: UPDATE_TYPES.SYNC,
+      description:
+        `✅ Synced **${user}**\n\n` +
+        `Added: ${result.addedRoles.length}\n` +
+        `Removed: ${result.removedRoles.length}`,
+    });
+
+    await interaction.editReply({
+      embeds: [embed],
+    });
+  } catch (error) {
+    console.error(`[Error] Error in rankSync function: ${error}`);
+  }
+}
+
 module.exports = {
   rank,
   leaderboard,
+  rankSync,
 };
